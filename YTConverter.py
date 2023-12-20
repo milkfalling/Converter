@@ -5,6 +5,7 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from pytube import YouTube
 from moviepy.editor import *
 import os
+from google.cloud import storage
 
 app = Flask(__name__)
 
@@ -35,11 +36,12 @@ def handle_message(event):
             print("WAV file saved:", wav_file)  # 添加這個print語句，顯示WAV文件的保存路徑
             
             # 在這裡添加上傳到雲端存儲的邏輯，並獲取下載連結
+            download_link=upload_to_gcs(wav_file, "ytconverter", "42069.wav")
             
             line_bot_api.reply_message(
                 event.reply_token,
-                TextSendMessage(text=f"WAV 檔案已保存: {wav_file}"))
-
+                TextSendMessage(text=f"{download_link}(ゝ∀･)b"))
+            
             # 清理下載的影片和轉換後的檔案
             os.remove(video_file)
             os.remove(wav_file)
@@ -47,6 +49,22 @@ def handle_message(event):
             line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(text=f"發生錯誤: {str(e)}"))
+
+def upload_to_gcs(wav_file_path, bucket_name, object_name):
+    # 創建GCS客戶端
+    storage_client = storage.Client()
+
+    # 獲取存儲桶參考
+    bucket = storage_client.bucket(bucket_name)
+
+    # 上傳WAV檔案到GCS
+    blob = bucket.blob(object_name)
+    blob.upload_from_filename(wav_file_path)
+
+    # 獲取上傳後的GCS對象URL
+    gcs_url = f"https://storage.googleapis.com/{bucket_name}/{object_name}"
+
+    return gcs_url
 
 def download_video(url):
     yt = YouTube(url)
