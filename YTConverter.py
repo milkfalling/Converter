@@ -6,6 +6,17 @@ from pytube import YouTube
 from moviepy.editor import *
 import os
 from google.cloud import storage
+import os
+import json
+from google.oauth2 import service_account
+from google.cloud import storage
+
+# 从 Heroku 环境变量读取服务账户密钥
+cred_info = json.loads(os.environ['GOOGLE_CREDENTIALS_JSON'])
+credentials = service_account.Credentials.from_service_account_info(cred_info)
+
+# 使用凭证初始化 Google Cloud 客户端
+storage_client = storage.Client(credentials=credentials)
 
 app = Flask(__name__)
 
