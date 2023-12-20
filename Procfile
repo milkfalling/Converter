@@ -1,1 +1,1 @@
-web: gunicorn YTConverter:app
+web: python YTConverter.py
