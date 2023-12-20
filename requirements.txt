@@ -3,3 +3,4 @@ line-bot-sdk
 pytube
 moviepy
 requests
+google.cloud
