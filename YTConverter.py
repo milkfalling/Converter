@@ -21,6 +21,7 @@ def callback():
     except InvalidSignatureError:
         abort(400)
 
+    print("Webhook request received:", body)  # 添加這個print語句，顯示Webhook請求的內容
     return 'OK'
 
 @handler.add(MessageEvent, message=TextMessage)
@@ -30,6 +31,8 @@ def handle_message(event):
         try:
             video_file = download_video(url)
             wav_file = convert_to_wav(video_file)
+            
+            print("WAV file saved:", wav_file)  # 添加這個print語句，顯示WAV文件的保存路徑
             
             # 在這裡添加上傳到雲端存儲的邏輯，並獲取下載連結
             
